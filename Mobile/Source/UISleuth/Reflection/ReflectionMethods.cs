@@ -45,10 +45,19 @@ namespace UISleuth.Reflection
 
             var name = typeof(UISleuthDiscoverable).FullName;
 
-            var discoverable = assembly
-                .CustomAttributes.Any(c => c.AttributeType.FullName.Equals(name));
+            try
+            {
+                var attributes = assembly.CustomAttributes;
+                var discoverable = attributes.Any(c => c.AttributeType.FullName.Equals(name));
 
-            return discoverable;
+                return discoverable;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+
+                return false;
+            }
         }
 
 

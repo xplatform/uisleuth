@@ -40,10 +40,28 @@ namespace UISleuth.Reflection
 
                 if (_messageTypes == null)
                 {
-                    _messageTypes = AppDomain
+                    var assemblies = AppDomain
                         .CurrentDomain
-                        .GetAssemblies()
-                        .Where(ReflectionMethods.IsUISleuthDiscoverable)
+                        .GetAssemblies();
+
+                    var sleuthAssemblies = new List<System.Reflection.Assembly>();
+                    foreach (var assembly in assemblies)
+                    {
+                        try
+                        {
+                            if (ReflectionMethods.IsUISleuthDiscoverable(assembly))
+                            {
+                                sleuthAssemblies.Add(assembly);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine(ex.Message);
+                        }
+                    }
+                    //var assembly = assemblies
+                    //    .Where(ReflectionMethods.IsUISleuthDiscoverable);
+                    _messageTypes = sleuthAssemblies
                         .SelectMany(a => a.GetTypes())
                         .Where(t => t.IsSubclassOf(typeof(UIMessage)))
                         .ToList();
@@ -61,8 +79,9 @@ namespace UISleuth.Reflection
 
                 return found;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
                 return null;
             }
         }
