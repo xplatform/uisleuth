@@ -48,7 +48,14 @@ namespace UISleuth.Networking
                 {
                     lock (_lock)
                     {
-                        _server?.Start();
+                        try
+                        {
+                            _server?.Start();
+                        }
+                        catch (Exception ex)
+                        {
+                            System.Diagnostics.Debug.WriteLine("Exception: " + ex.Message);
+                        }
                     }
 
                     OnSocketStarted();
